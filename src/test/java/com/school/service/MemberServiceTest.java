@@ -237,7 +237,7 @@ class MemberServiceTest {
 
         var result = memberService.countMembersByType(MemberType.STUDENT);
 
-        assertThat(result).isEqualTo(5L);
+        assertThat(result.getCount()).isEqualTo(5L);
     }
 
     @Test
@@ -277,6 +277,25 @@ class MemberServiceTest {
         var result = memberService.findMembersByTypeAndGroupAndCourseId(MemberType.STUDENT, "A1", 1L);
 
         assertThat(result).containsExactly(expectedDto);
+    }
+
+    @Test
+    void shouldFindMembersByGroupAndCourseId() {
+        var studentEntity = new Member();
+        var teacherEntity = new Member();
+        var studentDto = MemberDto.builder().id(1L).name("John").type(MemberType.STUDENT).group("A1").build();
+        var teacherDto = MemberDto.builder().id(2L).name("Prof Smith").type(MemberType.TEACHER).group("A1").build();
+
+        when(memberRepository.findByTypeAndGroupAndCoursesId(MemberType.STUDENT, "A1", 1L)).thenReturn(List.of(studentEntity));
+        when(memberRepository.findByTypeAndGroupAndCoursesId(MemberType.TEACHER, "A1", 1L)).thenReturn(List.of(teacherEntity));
+        when(memberMapper.toDto(studentEntity)).thenReturn(studentDto);
+        when(memberMapper.toDto(teacherEntity)).thenReturn(teacherDto);
+
+        var result = memberService.findMembersByGroupAndCourseId("A1", 1L);
+
+        assertThat(result.getGroup()).isEqualTo("A1");
+        assertThat(result.getCourseId()).isEqualTo(1L);
+        assertThat(result.getMembers()).containsExactly(studentDto, teacherDto);
     }
 
     @Test

@@ -1,5 +1,7 @@
 package com.school.service;
 
+import com.school.dto.CountDto;
+import com.school.dto.GroupCourseReportDto;
 import com.school.dto.MemberDto;
 import com.school.entity.Course;
 import com.school.entity.Member;
@@ -11,6 +13,7 @@ import com.school.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -60,8 +63,8 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public long countMembersByType(MemberType type) {
-        return memberRepository.countByType(type);
+    public CountDto countMembersByType(MemberType type) {
+        return new CountDto(memberRepository.countByType(type));
     }
 
     @Transactional(readOnly = true)
@@ -77,6 +80,19 @@ public class MemberService {
     @Transactional(readOnly = true)
     public List<MemberDto> findMembersByTypeAndGroupAndCourseId(MemberType type, String group, Long courseId) {
         return memberRepository.findByTypeAndGroupAndCoursesId(type, group, courseId).stream().map(memberMapper::toDto).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public GroupCourseReportDto findMembersByGroupAndCourseId(String group, Long courseId) {
+        List<MemberDto> students = findMembersByTypeAndGroupAndCourseId(MemberType.STUDENT, group, courseId);
+        List<MemberDto> teachers = findMembersByTypeAndGroupAndCourseId(MemberType.TEACHER, group, courseId);
+        List<MemberDto> allMembers = new ArrayList<>(students);
+        allMembers.addAll(teachers);
+        return GroupCourseReportDto.builder()
+                .group(group)
+                .courseId(courseId)
+                .members(allMembers)
+                .build();
     }
 
     @Transactional(readOnly = true)

@@ -163,6 +163,6 @@ class CourseServiceTest {
 
         var result = courseService.countCoursesByType(CourseType.MAIN);
 
-        assertThat(result).isEqualTo(3L);
+        assertThat(result.getCount()).isEqualTo(3L);
     }
 }

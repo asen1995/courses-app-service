@@ -1,0 +1,11 @@
+### Update Member
+PUT {{host}}/members/1
+Content-Type: application/json
+
+{
+  "name": "John Updated",
+  "age": 21,
+  "group": "B1",
+  "type": "STUDENT",
+  "courseIds": [1, 2]
+}

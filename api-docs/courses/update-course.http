@@ -1,0 +1,8 @@
+### Update Course
+PUT {{host}}/courses/1
+Content-Type: application/json
+
+{
+  "name": "Advanced Math",
+  "type": "MAIN"
+}

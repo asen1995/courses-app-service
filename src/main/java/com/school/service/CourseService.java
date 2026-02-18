@@ -1,5 +1,6 @@
 package com.school.service;
 
+import com.school.dto.CountDto;
 import com.school.dto.CourseDto;
 import com.school.enums.CourseType;
 import com.school.exception.ResourceNotFoundException;
@@ -51,8 +52,8 @@ public class CourseService {
     }
 
     @Transactional(readOnly = true)
-    public long countCoursesByType(CourseType type) {
-        return courseRepository.countByType(type);
+    public CountDto countCoursesByType(CourseType type) {
+        return new CountDto(courseRepository.countByType(type));
     }
 
     private com.school.entity.Course findOrThrow(Long id) {
