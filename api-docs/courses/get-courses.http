@@ -1,0 +1,5 @@
+### Get Course by ID
+GET {{host}}/courses/1
+
+### Get all Courses
+GET {{host}}/courses

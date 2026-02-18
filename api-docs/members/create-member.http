@@ -1,0 +1,23 @@
+### Create Student
+POST {{host}}/members
+Content-Type: application/json
+
+{
+  "name": "John",
+  "age": 20,
+  "group": "A1",
+  "type": "STUDENT",
+  "courseIds": [1]
+}
+
+### Create Teacher
+POST {{host}}/members
+Content-Type: application/json
+
+{
+  "name": "Prof Smith",
+  "age": 45,
+  "group": "A1",
+  "type": "TEACHER",
+  "courseIds": [1]
+}
