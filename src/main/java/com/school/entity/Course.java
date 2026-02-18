@@ -1,5 +1,6 @@
 package com.school.entity;
 
+import com.school.enums.CourseType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

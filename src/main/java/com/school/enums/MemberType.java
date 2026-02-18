@@ -1,4 +1,4 @@
-package com.school.entity;
+package com.school.enums;
 
 public enum MemberType {
     STUDENT,
