@@ -1,0 +1,2 @@
+### Delete Member
+DELETE {{host}}/members/1

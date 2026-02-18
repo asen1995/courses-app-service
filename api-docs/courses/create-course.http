@@ -1,0 +1,17 @@
+### Create Main Course
+POST {{host}}/courses
+Content-Type: application/json
+
+{
+  "name": "Math",
+  "type": "MAIN"
+}
+
+### Create Secondary Course
+POST {{host}}/courses
+Content-Type: application/json
+
+{
+  "name": "Art",
+  "type": "SECONDARY"
+}

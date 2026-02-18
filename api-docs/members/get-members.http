@@ -1,0 +1,8 @@
+### Get Member by ID
+GET {{host}}/members/1
+
+### Get all Students
+GET {{host}}/members?type=STUDENT
+
+### Get all Teachers
+GET {{host}}/members?type=TEACHER

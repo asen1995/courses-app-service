@@ -1,0 +1,2 @@
+### Delete Course
+DELETE {{host}}/courses/1
