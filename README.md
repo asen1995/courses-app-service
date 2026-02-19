@@ -1,4 +1,4 @@
-# School App Service
+# Course App Service
 
 A Spring Boot REST API for managing students, teachers, and courses. Supports CRUD operations and reporting queries such as counting members, filtering by group/course/age, and more.
 
