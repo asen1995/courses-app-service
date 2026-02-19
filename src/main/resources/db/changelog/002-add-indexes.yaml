@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: 4
+      author: Asen Nikolaev
+      comment: B-tree indexes for frequently queried columns
+      changes:
+        - createIndex:
+            tableName: members
+            indexName: idx_members_type
+            columns:
+              - column:
+                  name: type
+        - createIndex:
+            tableName: member_courses
+            indexName: idx_member_courses_course_id
+            columns:
+              - column:
+                  name: course_id
