@@ -15,6 +15,12 @@ import lombok.Setter;
 
 import java.util.Set;
 
+/**
+ * JPA entity representing a school member (student or teacher).
+ * <p>
+ * Members belong to a group and can be enrolled in multiple {@link Course courses}
+ * via a many-to-many relationship.
+ */
 @Entity
 @Table(name = "members")
 @Getter

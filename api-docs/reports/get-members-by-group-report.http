@@ -1,0 +1,2 @@
+### Get Members by Group
+GET {{host}}/reports/groups/members?group=A1

@@ -12,6 +12,12 @@ import lombok.Setter;
 
 import java.util.Set;
 
+/**
+ * Data transfer object for member data.
+ * <p>
+ * Used for both request and response payloads in member endpoints.
+ * Course associations are represented as a set of course IDs.
+ */
 @Getter
 @Setter
 @NoArgsConstructor

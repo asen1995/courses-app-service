@@ -78,6 +78,16 @@ class MemberControllerTest {
     }
 
     @Test
+    void shouldReturnNotFoundWhenCreatingMemberWithNonExistentCourse() throws Exception {
+        var dto = memberDto("John", 20, "A1", MemberType.STUDENT, Set.of(999L));
+
+        mockMvc.perform(post(MEMBERS_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     void shouldReturnNotFoundForMissingMember() throws Exception {
         mockMvc.perform(get(MEMBER_BY_ID_PATH, 999))
                 .andExpect(status().isNotFound());
@@ -113,6 +123,17 @@ class MemberControllerTest {
     }
 
     @Test
+    void shouldReturnNotFoundWhenUpdatingMemberWithNonExistentCourse() throws Exception {
+        var member = createMember("John", 20, "A1", MemberType.STUDENT, Set.of());
+        var updated = memberDto("John Updated", 21, "B1", MemberType.STUDENT, Set.of(999L));
+
+        mockMvc.perform(put(MEMBER_BY_ID_PATH, member.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updated)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     void shouldDeleteMember() throws Exception {
         var member = createMember("John", 20, "A1", MemberType.STUDENT, Set.of());
 
@@ -132,7 +153,9 @@ class MemberControllerTest {
         return objectMapper.readValue(result.getResponse().getContentAsString(), CourseDto.class);
     }
 
-    private MemberDto createMember(String memberName, int memberAge, String memberGroup, MemberType memberType, Set<Long> courseIds) throws Exception {
+    private MemberDto createMember(String memberName, int memberAge,
+            String memberGroup, MemberType memberType,
+            Set<Long> courseIds) throws Exception {
         var dto = memberDto(memberName, memberAge, memberGroup, memberType, courseIds);
         var result = mockMvc.perform(post(MEMBERS_PATH)
                         .contentType(MediaType.APPLICATION_JSON)

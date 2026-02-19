@@ -1,0 +1,26 @@
+### Count Students
+GET {{host}}/reports/members/count?type=STUDENT
+
+### Count Teachers
+GET {{host}}/reports/members/count?type=TEACHER
+
+### Count Main Courses
+GET {{host}}/reports/courses/count?type=MAIN
+
+### Count Secondary Courses
+GET {{host}}/reports/courses/count?type=SECONDARY
+
+### Get Students in Course
+GET {{host}}/reports/courses/members?courseId=2&type=STUDENT
+
+### Get Teachers in Course
+GET {{host}}/reports/courses/members?courseId=1&type=TEACHER
+
+### Get Members by Group
+GET {{host}}/reports/groups/members?group=A1
+
+### Get Members by Group and Course
+GET {{host}}/reports/groups/courses?group=A1&courseId=1
+
+### Filter Students by Age and Course
+GET {{host}}/reports/members/filter?minAge=&courseId=1&type=STUDENT

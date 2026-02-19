@@ -47,16 +47,16 @@ class CourseServiceTest {
                 .type(CourseType.MAIN)
                 .build();
 
-        when(courseMapper.toEntity(dto)).thenReturn(entity);
+        when(courseMapper.toCourseEntity(dto)).thenReturn(entity);
         when(courseRepository.save(entity)).thenReturn(savedEntity);
-        when(courseMapper.toDto(savedEntity)).thenReturn(expectedDto);
+        when(courseMapper.toCourseDto(savedEntity)).thenReturn(expectedDto);
 
         var result = courseService.createCourse(dto);
 
         assertThat(result).isEqualTo(expectedDto);
-        verify(courseMapper).toEntity(dto);
+        verify(courseMapper).toCourseEntity(dto);
         verify(courseRepository).save(entity);
-        verify(courseMapper).toDto(savedEntity);
+        verify(courseMapper).toCourseDto(savedEntity);
     }
 
     @Test
@@ -70,7 +70,7 @@ class CourseServiceTest {
                 .build();
 
         when(courseRepository.findById(1L)).thenReturn(Optional.of(entity));
-        when(courseMapper.toDto(entity)).thenReturn(expectedDto);
+        when(courseMapper.toCourseDto(entity)).thenReturn(expectedDto);
 
         var result = courseService.getCourseById(1L);
 
@@ -94,8 +94,8 @@ class CourseServiceTest {
         var dto2 = CourseDto.builder().id(2L).name("Art").type(CourseType.SECONDARY).build();
 
         when(courseRepository.findAll()).thenReturn(List.of(entity1, entity2));
-        when(courseMapper.toDto(entity1)).thenReturn(dto1);
-        when(courseMapper.toDto(entity2)).thenReturn(dto2);
+        when(courseMapper.toCourseDto(entity1)).thenReturn(dto1);
+        when(courseMapper.toCourseDto(entity2)).thenReturn(dto2);
 
         var result = courseService.getAllCourses();
 
@@ -119,12 +119,12 @@ class CourseServiceTest {
 
         when(courseRepository.findById(1L)).thenReturn(Optional.of(entity));
         when(courseRepository.save(entity)).thenReturn(savedEntity);
-        when(courseMapper.toDto(savedEntity)).thenReturn(expectedDto);
+        when(courseMapper.toCourseDto(savedEntity)).thenReturn(expectedDto);
 
         var result = courseService.updateCourse(1L, dto);
 
         assertThat(result).isEqualTo(expectedDto);
-        verify(courseMapper).updateEntity(dto, entity);
+        verify(courseMapper).updateCourseEntity(dto, entity);
         verify(courseRepository).save(entity);
     }
 
@@ -163,6 +163,6 @@ class CourseServiceTest {
 
         var result = courseService.countCoursesByType(CourseType.MAIN);
 
-        assertThat(result).isEqualTo(3L);
+        assertThat(result.getCount()).isEqualTo(3L);
     }
 }

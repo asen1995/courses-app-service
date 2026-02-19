@@ -7,6 +7,11 @@ import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Abstract base entity providing a shared auto-generated primary key.
+ * <p>
+ * All JPA entities in the application extend this class.
+ */
 @MappedSuperclass
 @Getter
 @Setter

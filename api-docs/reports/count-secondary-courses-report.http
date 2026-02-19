@@ -1,0 +1,2 @@
+### Count Secondary Courses
+GET {{host}}/reports/courses/count?type=SECONDARY

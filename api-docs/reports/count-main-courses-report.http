@@ -1,0 +1,2 @@
+### Count Main Courses
+GET {{host}}/reports/courses/count?type=MAIN

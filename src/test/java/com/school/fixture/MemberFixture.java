@@ -7,7 +7,9 @@ import java.util.Set;
 
 public class MemberFixture {
 
-    public static MemberDto memberDto(String memberName, int memberAge, String memberGroup, MemberType memberType, Set<Long> courseIds) {
+    public static MemberDto memberDto(String memberName, int memberAge,
+            String memberGroup, MemberType memberType,
+            Set<Long> courseIds) {
         return MemberDto.builder()
                 .name(memberName)
                 .age(memberAge)

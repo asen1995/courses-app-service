@@ -1,0 +1,2 @@
+### Filter Students by Age and Course
+GET {{host}}/reports/members/filter?minAge=60&courseId=1&type=STUDENT
