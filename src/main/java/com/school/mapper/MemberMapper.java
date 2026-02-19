@@ -34,22 +34,22 @@ public interface MemberMapper {
      * Converts a member DTO to an entity. Course associations are ignored
      * and must be set separately.
      *
-     * @param dto the member DTO
+     * @param memberDto the member DTO
      * @return the member entity
      */
     @Mapping(target = "courses", ignore = true)
-    Member toMemberEntity(MemberDto dto);
+    Member toMemberEntity(MemberDto memberDto);
 
     /**
      * Updates an existing member entity from a DTO. ID and course associations
      * are ignored and must be handled separately.
      *
-     * @param dto    the source DTO
+     * @param memberDto    the source DTO
      * @param member the target entity to update
      */
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "courses", ignore = true)
-    void updateMemberEntity(MemberDto dto, @MappingTarget Member member);
+    void updateMemberEntity(MemberDto memberDto, @MappingTarget Member member);
 
     /**
      * Extracts course IDs from a set of course entities.

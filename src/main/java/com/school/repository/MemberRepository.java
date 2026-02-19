@@ -88,6 +88,28 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     List<Member> findByGroup(String group);
 
     /**
+     * Finds members by types, group, and course enrollment.
+     *
+     * @param types    the member types to include
+     * @param group    the group name
+     * @param courseId the course ID
+     * @return list of matching members
+     */
+    @EntityGraph(attributePaths = "courses")
+    @Query("""
+            SELECT m
+            FROM Member m
+            JOIN m.courses c
+            WHERE m.type IN :types
+              AND m.group = :group
+              AND c.id = :courseId
+            """)
+    List<Member> findByTypesAndGroupAndCoursesId(
+            List<MemberType> types,
+            String group,
+            Long courseId);
+
+    /**
      * Finds members by type, group, and course enrollment.
      *
      * @param type     the member type
