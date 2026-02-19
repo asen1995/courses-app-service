@@ -6,6 +6,7 @@ import com.school.dto.MemberDto;
 import com.school.entity.Course;
 import com.school.entity.Member;
 import com.school.enums.MemberType;
+import com.school.exception.DuplicateTeacherException;
 import com.school.exception.ResourceNotFoundException;
 import com.school.mapper.MemberMapper;
 import com.school.repository.CourseRepository;
@@ -56,6 +57,9 @@ public class MemberService {
      * @throws ResourceNotFoundException if any course ID is not found
      */
     public MemberDto createMember(MemberDto dto) {
+        if (dto.getType() == MemberType.TEACHER) {
+            validateOneTeacherPerCourse(dto.getCourseIds(), null);
+        }
         var member = memberMapper.toMemberEntity(dto);
         member.setCourses(resolveCourses(dto.getCourseIds()));
         return memberMapper.toMemberDto(memberRepository.save(member));
@@ -70,7 +74,7 @@ public class MemberService {
      */
     @Transactional(readOnly = true)
     public MemberDto getMemberById(Long id) {
-        return memberMapper.toMemberDto(findOrThrow(id));
+        return memberMapper.toMemberDto(findWithCoursesOrThrow(id));
     }
 
     /**
@@ -94,6 +98,9 @@ public class MemberService {
      */
     public MemberDto updateMember(Long id, MemberDto dto) {
         var member = findOrThrow(id);
+        if (dto.getType() == MemberType.TEACHER) {
+            validateOneTeacherPerCourse(dto.getCourseIds(), id);
+        }
         memberMapper.updateMemberEntity(dto, member);
         member.setCourses(resolveCourses(dto.getCourseIds()));
         return memberMapper.toMemberDto(memberRepository.save(member));
@@ -212,8 +219,28 @@ public class MemberService {
                 .stream().map(memberMapper::toMemberDto).toList();
     }
 
+    private void validateOneTeacherPerCourse(Set<Long> courseIds, Long currentMemberId) {
+        if (courseIds == null || courseIds.isEmpty()) {
+            return;
+        }
+        for (Long courseId : courseIds) {
+            boolean teacherExists = memberRepository.courseHasAnotherTeacher(
+                    courseId, currentMemberId);
+            if (teacherExists) {
+                throw new DuplicateTeacherException(
+                        String.format("A teacher is already assigned to course with id: %d", courseId));
+            }
+        }
+    }
+
     private Member findOrThrow(Long id) {
         return memberRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format("Member not found with id: %d", id)));
+    }
+
+    private Member findWithCoursesOrThrow(Long id) {
+        return memberRepository.findWithCoursesById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         String.format("Member not found with id: %d", id)));
     }

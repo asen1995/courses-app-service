@@ -2,10 +2,12 @@ package com.school.repository;
 
 import com.school.entity.Member;
 import com.school.enums.MemberType;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Spring Data JPA repository for {@link Member} entities.
@@ -13,6 +15,15 @@ import java.util.List;
  * Provides custom query methods for filtering members by type, group, course, and age.
  */
 public interface MemberRepository extends JpaRepository<Member, Long> {
+
+    /**
+     * Finds a member by ID with courses eagerly loaded.
+     *
+     * @param id the member ID
+     * @return the member, if found
+     */
+    @EntityGraph(attributePaths = "courses")
+    Optional<Member> findWithCoursesById(Long id);
 
     /**
      * Counts members by their type.
@@ -28,6 +39,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
      * @param type the member type
      * @return list of matching members
      */
+    @EntityGraph(attributePaths = "courses")
     List<Member> findByType(MemberType type);
 
     /**
@@ -37,6 +49,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
      * @param courseId the course ID
      * @return list of matching members
      */
+    @EntityGraph(attributePaths = "courses")
     @Query("""
             SELECT m
             FROM Member m
@@ -49,11 +62,29 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
             Long courseId);
 
     /**
+     * Checks if a teacher other than the excluded one is assigned to a specific course.
+     *
+     * @param courseId        the course ID
+     * @param currentMemberId the member ID to exclude from the check, or null when creating
+     * @return true if another teacher is assigned
+     */
+    @Query("""
+            SELECT COUNT(m) > 0
+            FROM Member m
+            JOIN m.courses c
+            WHERE m.type = 'TEACHER'
+              AND c.id = :courseId
+              AND (:currentMemberId IS NULL OR m.id <> :currentMemberId)
+            """)
+    boolean courseHasAnotherTeacher(Long courseId, Long currentMemberId);
+
+    /**
      * Finds all members belonging to a specific group.
      *
      * @param group the group name
      * @return list of members in the group
      */
+    @EntityGraph(attributePaths = "courses")
     List<Member> findByGroup(String group);
 
     /**
@@ -64,6 +95,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
      * @param courseId the course ID
      * @return list of matching members
      */
+    @EntityGraph(attributePaths = "courses")
     @Query("""
             SELECT m
             FROM Member m
@@ -86,6 +118,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
      * @param courseId the course ID
      * @return list of matching members
      */
+    @EntityGraph(attributePaths = "courses")
     @Query("""
             SELECT m
             FROM Member m

@@ -46,6 +46,19 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * Handles duplicate teacher exceptions and returns HTTP 409.
+     *
+     * @param ex the exception
+     * @return error response with the exception message
+     */
+    @ExceptionHandler(DuplicateTeacherException.class)
+    public ResponseEntity<Map<String, String>> handleDuplicateTeacher(
+            DuplicateTeacherException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(Map.of("error", ex.getMessage()));
+    }
+
+    /**
      * Catches all unhandled exceptions and returns HTTP 500.
      * <p>
      * Acts as a safety net for unexpected errors not covered by specific handlers.
