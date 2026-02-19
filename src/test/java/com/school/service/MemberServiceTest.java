@@ -64,16 +64,16 @@ class MemberServiceTest {
                 .courseIds(Set.of(courseId))
                 .build();
 
-        when(memberMapper.toEntity(dto)).thenReturn(entity);
+        when(memberMapper.toMemberEntity(dto)).thenReturn(entity);
         when(courseRepository.findAllById(Set.of(courseId))).thenReturn(List.of(course));
         when(memberRepository.save(entity)).thenReturn(savedEntity);
-        when(memberMapper.toDto(savedEntity)).thenReturn(expectedDto);
+        when(memberMapper.toMemberDto(savedEntity)).thenReturn(expectedDto);
 
         var result = memberService.createMember(dto);
 
         assertThat(result).isEqualTo(expectedDto);
         assertThat(entity.getCourses()).containsExactly(course);
-        verify(memberMapper).toEntity(dto);
+        verify(memberMapper).toMemberEntity(dto);
         verify(memberRepository).save(entity);
     }
 
@@ -90,9 +90,9 @@ class MemberServiceTest {
         var savedEntity = new Member();
         var expectedDto = MemberDto.builder().id(1L).name("John").build();
 
-        when(memberMapper.toEntity(dto)).thenReturn(entity);
+        when(memberMapper.toMemberEntity(dto)).thenReturn(entity);
         when(memberRepository.save(entity)).thenReturn(savedEntity);
-        when(memberMapper.toDto(savedEntity)).thenReturn(expectedDto);
+        when(memberMapper.toMemberDto(savedEntity)).thenReturn(expectedDto);
 
         var result = memberService.createMember(dto);
 
@@ -113,9 +113,9 @@ class MemberServiceTest {
         var savedEntity = new Member();
         var expectedDto = MemberDto.builder().id(1L).name("John").build();
 
-        when(memberMapper.toEntity(dto)).thenReturn(entity);
+        when(memberMapper.toMemberEntity(dto)).thenReturn(entity);
         when(memberRepository.save(entity)).thenReturn(savedEntity);
-        when(memberMapper.toDto(savedEntity)).thenReturn(expectedDto);
+        when(memberMapper.toMemberDto(savedEntity)).thenReturn(expectedDto);
 
         var result = memberService.createMember(dto);
 
@@ -136,7 +136,7 @@ class MemberServiceTest {
         var course = new Course();
         course.setId(1L);
 
-        when(memberMapper.toEntity(dto)).thenReturn(entity);
+        when(memberMapper.toMemberEntity(dto)).thenReturn(entity);
         when(courseRepository.findAllById(Set.of(1L, 999L))).thenReturn(List.of(course));
 
         assertThatThrownBy(() -> memberService.createMember(dto))
@@ -155,7 +155,7 @@ class MemberServiceTest {
                 .build();
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(entity));
-        when(memberMapper.toDto(entity)).thenReturn(expectedDto);
+        when(memberMapper.toMemberDto(entity)).thenReturn(expectedDto);
 
         var result = memberService.getMemberById(1L);
 
@@ -179,8 +179,8 @@ class MemberServiceTest {
         var dto2 = MemberDto.builder().id(2L).name("Jane").type(MemberType.STUDENT).build();
 
         when(memberRepository.findByType(MemberType.STUDENT)).thenReturn(List.of(entity1, entity2));
-        when(memberMapper.toDto(entity1)).thenReturn(dto1);
-        when(memberMapper.toDto(entity2)).thenReturn(dto2);
+        when(memberMapper.toMemberDto(entity1)).thenReturn(dto1);
+        when(memberMapper.toMemberDto(entity2)).thenReturn(dto2);
 
         var result = memberService.getMembersByType(MemberType.STUDENT);
 
@@ -214,12 +214,12 @@ class MemberServiceTest {
         when(memberRepository.findById(1L)).thenReturn(Optional.of(entity));
         when(courseRepository.findAllById(Set.of(courseId))).thenReturn(List.of(course));
         when(memberRepository.save(entity)).thenReturn(savedEntity);
-        when(memberMapper.toDto(savedEntity)).thenReturn(expectedDto);
+        when(memberMapper.toMemberDto(savedEntity)).thenReturn(expectedDto);
 
         var result = memberService.updateMember(1L, dto);
 
         assertThat(result).isEqualTo(expectedDto);
-        verify(memberMapper).updateEntity(dto, entity);
+        verify(memberMapper).updateMemberEntity(dto, entity);
         assertThat(entity.getCourses()).containsExactly(course);
     }
 
@@ -290,7 +290,7 @@ class MemberServiceTest {
 
         when(courseRepository.existsById(1L)).thenReturn(true);
         when(memberRepository.findByTypeAndCoursesId(MemberType.STUDENT, 1L)).thenReturn(List.of(entity));
-        when(memberMapper.toDto(entity)).thenReturn(expectedDto);
+        when(memberMapper.toMemberDto(entity)).thenReturn(expectedDto);
 
         var result = memberService.findMembersByTypeAndCourseId(MemberType.STUDENT, 1L);
 
@@ -312,7 +312,7 @@ class MemberServiceTest {
         var expectedDto = MemberDto.builder().id(1L).name("John").group("A1").build();
 
         when(memberRepository.findByGroup("A1")).thenReturn(List.of(entity));
-        when(memberMapper.toDto(entity)).thenReturn(expectedDto);
+        when(memberMapper.toMemberDto(entity)).thenReturn(expectedDto);
 
         var result = memberService.findMembersByGroup("A1");
 
@@ -325,7 +325,7 @@ class MemberServiceTest {
         var expectedDto = MemberDto.builder().id(1L).name("John").type(MemberType.STUDENT).group("A1").build();
 
         when(memberRepository.findByTypeAndGroupAndCoursesId(MemberType.STUDENT, "A1", 1L)).thenReturn(List.of(entity));
-        when(memberMapper.toDto(entity)).thenReturn(expectedDto);
+        when(memberMapper.toMemberDto(entity)).thenReturn(expectedDto);
 
         var result = memberService.findMembersByTypeAndGroupAndCourseId(MemberType.STUDENT, "A1", 1L);
 
@@ -342,8 +342,8 @@ class MemberServiceTest {
         when(courseRepository.existsById(1L)).thenReturn(true);
         when(memberRepository.findByTypeAndGroupAndCoursesId(MemberType.STUDENT, "A1", 1L)).thenReturn(List.of(studentEntity));
         when(memberRepository.findByTypeAndGroupAndCoursesId(MemberType.TEACHER, "A1", 1L)).thenReturn(List.of(teacherEntity));
-        when(memberMapper.toDto(studentEntity)).thenReturn(studentDto);
-        when(memberMapper.toDto(teacherEntity)).thenReturn(teacherDto);
+        when(memberMapper.toMemberDto(studentEntity)).thenReturn(studentDto);
+        when(memberMapper.toMemberDto(teacherEntity)).thenReturn(teacherDto);
 
         var result = memberService.findMembersByGroupAndCourseId("A1", 1L);
 
@@ -368,7 +368,7 @@ class MemberServiceTest {
 
         when(courseRepository.existsById(1L)).thenReturn(true);
         when(memberRepository.findByTypeAndAgeGreaterThanAndCoursesId(MemberType.STUDENT, 20, 1L)).thenReturn(List.of(entity));
-        when(memberMapper.toDto(entity)).thenReturn(expectedDto);
+        when(memberMapper.toMemberDto(entity)).thenReturn(expectedDto);
 
         var result = memberService.findMembersByTypeAndAgeGreaterThanAndCourseId(MemberType.STUDENT, 20, 1L);
 

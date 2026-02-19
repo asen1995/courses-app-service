@@ -19,6 +19,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Service layer for member management.
+ * <p>
+ * Handles business logic for creating, retrieving, updating, deleting members,
+ * as well as reporting queries such as counting, filtering by type/group/course/age.
+ */
 @Service
 @Transactional
 public class MemberService {
@@ -27,35 +33,76 @@ public class MemberService {
     private final CourseRepository courseRepository;
     private final MemberMapper memberMapper;
 
+    /**
+     * Constructs the service with the required dependencies.
+     *
+     * @param memberRepository the member repository
+     * @param courseRepository  the course repository (for course resolution and validation)
+     * @param memberMapper     the member mapper
+     */
     public MemberService(MemberRepository memberRepository, CourseRepository courseRepository, MemberMapper memberMapper) {
         this.memberRepository = memberRepository;
         this.courseRepository = courseRepository;
         this.memberMapper = memberMapper;
     }
 
+    /**
+     * Creates a new member with the specified course enrollments.
+     *
+     * @param dto the member data including course IDs
+     * @return the created member
+     * @throws ResourceNotFoundException if any course ID is not found
+     */
     public MemberDto createMember(MemberDto dto) {
-        var member = memberMapper.toEntity(dto);
+        var member = memberMapper.toMemberEntity(dto);
         member.setCourses(resolveCourses(dto.getCourseIds()));
-        return memberMapper.toDto(memberRepository.save(member));
+        return memberMapper.toMemberDto(memberRepository.save(member));
     }
 
+    /**
+     * Retrieves a member by its ID.
+     *
+     * @param id the member ID
+     * @return the member data
+     * @throws ResourceNotFoundException if the member is not found
+     */
     @Transactional(readOnly = true)
     public MemberDto getMemberById(Long id) {
-        return memberMapper.toDto(findOrThrow(id));
+        return memberMapper.toMemberDto(findOrThrow(id));
     }
 
+    /**
+     * Retrieves all members of a given type.
+     *
+     * @param type the member type
+     * @return list of matching members
+     */
     @Transactional(readOnly = true)
     public List<MemberDto> getMembersByType(MemberType type) {
-        return memberRepository.findByType(type).stream().map(memberMapper::toDto).toList();
+        return memberRepository.findByType(type).stream().map(memberMapper::toMemberDto).toList();
     }
 
+    /**
+     * Updates an existing member and its course enrollments.
+     *
+     * @param id  the member ID
+     * @param dto the updated member data
+     * @return the updated member
+     * @throws ResourceNotFoundException if the member or any course ID is not found
+     */
     public MemberDto updateMember(Long id, MemberDto dto) {
         var member = findOrThrow(id);
-        memberMapper.updateEntity(dto, member);
+        memberMapper.updateMemberEntity(dto, member);
         member.setCourses(resolveCourses(dto.getCourseIds()));
-        return memberMapper.toDto(memberRepository.save(member));
+        return memberMapper.toMemberDto(memberRepository.save(member));
     }
 
+    /**
+     * Deletes a member by its ID.
+     *
+     * @param id the member ID
+     * @throws ResourceNotFoundException if the member is not found
+     */
     public void deleteMember(Long id) {
         if (Boolean.FALSE.equals(memberRepository.existsById(id))) {
             throw new ResourceNotFoundException("Member not found with id: " + id);
@@ -63,27 +110,64 @@ public class MemberService {
         memberRepository.deleteById(id);
     }
 
+    /**
+     * Counts members by type.
+     *
+     * @param type the member type
+     * @return the count wrapped in a DTO
+     */
     @Transactional(readOnly = true)
     public CountDto countMembersByType(MemberType type) {
         return new CountDto(memberRepository.countByType(type));
     }
 
+    /**
+     * Finds members of a given type enrolled in a specific course.
+     *
+     * @param type     the member type
+     * @param courseId the course ID
+     * @return list of matching members
+     * @throws ResourceNotFoundException if the course is not found
+     */
     @Transactional(readOnly = true)
     public List<MemberDto> findMembersByTypeAndCourseId(MemberType type, Long courseId) {
         validateCourseExists(courseId);
-        return memberRepository.findByTypeAndCoursesId(type, courseId).stream().map(memberMapper::toDto).toList();
+        return memberRepository.findByTypeAndCoursesId(type, courseId).stream().map(memberMapper::toMemberDto).toList();
     }
 
+    /**
+     * Finds all members belonging to a specific group.
+     *
+     * @param group the group name
+     * @return list of members in the group
+     */
     @Transactional(readOnly = true)
     public List<MemberDto> findMembersByGroup(String group) {
-        return memberRepository.findByGroup(group).stream().map(memberMapper::toDto).toList();
+        return memberRepository.findByGroup(group).stream().map(memberMapper::toMemberDto).toList();
     }
 
+    /**
+     * Finds members by type, group, and course enrollment.
+     *
+     * @param type     the member type
+     * @param group    the group name
+     * @param courseId the course ID
+     * @return list of matching members
+     */
     @Transactional(readOnly = true)
     public List<MemberDto> findMembersByTypeAndGroupAndCourseId(MemberType type, String group, Long courseId) {
-        return memberRepository.findByTypeAndGroupAndCoursesId(type, group, courseId).stream().map(memberMapper::toDto).toList();
+        return memberRepository.findByTypeAndGroupAndCoursesId(type, group, courseId).stream().map(memberMapper::toMemberDto).toList();
     }
 
+    /**
+     * Builds a report of members in a group enrolled in a specific course,
+     * combining both students and teachers.
+     *
+     * @param group    the group name
+     * @param courseId the course ID
+     * @return the group-course report
+     * @throws ResourceNotFoundException if the course is not found
+     */
     @Transactional(readOnly = true)
     public GroupCourseReportDto findMembersByGroupAndCourseId(String group, Long courseId) {
         validateCourseExists(courseId);
@@ -98,10 +182,19 @@ public class MemberService {
                 .build();
     }
 
+    /**
+     * Finds members by type with age greater than the specified value, enrolled in a course.
+     *
+     * @param type     the member type
+     * @param age      the minimum age (exclusive)
+     * @param courseId the course ID
+     * @return list of matching members
+     * @throws ResourceNotFoundException if the course is not found
+     */
     @Transactional(readOnly = true)
     public List<MemberDto> findMembersByTypeAndAgeGreaterThanAndCourseId(MemberType type, int age, Long courseId) {
         validateCourseExists(courseId);
-        return memberRepository.findByTypeAndAgeGreaterThanAndCoursesId(type, age, courseId).stream().map(memberMapper::toDto).toList();
+        return memberRepository.findByTypeAndAgeGreaterThanAndCoursesId(type, age, courseId).stream().map(memberMapper::toMemberDto).toList();
     }
 
     private Member findOrThrow(Long id) {

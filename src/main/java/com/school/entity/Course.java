@@ -11,9 +11,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * JPA entity representing a school course.
+ * <p>
+ * Courses have a type (MAIN or SECONDARY) and can have multiple {@link Member members}
+ * enrolled via a many-to-many relationship.
+ */
 @Entity
 @Table(name = "courses")
 @Getter
