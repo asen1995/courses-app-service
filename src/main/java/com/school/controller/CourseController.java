@@ -76,7 +76,9 @@ public class CourseController {
      * @return the updated course
      */
     @PutMapping("/{id}")
-    public ResponseEntity<CourseDto> updateCourse(@PathVariable Long id, @Valid @RequestBody CourseDto dto) {
+    public ResponseEntity<CourseDto> updateCourse(
+            @PathVariable Long id,
+            @Valid @RequestBody CourseDto dto) {
         return ResponseEntity.ok(courseService.updateCourse(id, dto));
     }
 

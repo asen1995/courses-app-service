@@ -48,7 +48,8 @@ public class LoggingAspect {
             long elapsed = System.currentTimeMillis() - start;
 
             if (result instanceof ResponseEntity<?> response) {
-                log.info("Finished {}.{} in {} ms with result: {}", className, methodName, elapsed, response.getStatusCode());
+                log.info("Finished {}.{} in {} ms with result: {}",
+                        className, methodName, elapsed, response.getStatusCode());
             } else {
                 log.info("Finished {}.{} in {} ms", className, methodName, elapsed);
             }
@@ -56,7 +57,8 @@ public class LoggingAspect {
             return result;
         } catch (Throwable ex) {
             long elapsed = System.currentTimeMillis() - start;
-            log.error("Failed {}.{} in {} ms with exception: {}", className, methodName, elapsed, ex.getMessage());
+            log.error("Failed {}.{} in {} ms with exception: {}",
+                    className, methodName, elapsed, ex.getMessage());
             throw ex;
         }
     }

@@ -69,7 +69,9 @@ public class ReportController {
      * @return list of matching members
      */
     @GetMapping("/courses/members")
-    public ResponseEntity<List<MemberDto>> getMembersByCourse(@RequestParam Long courseId, @RequestParam MemberType type) {
+    public ResponseEntity<List<MemberDto>> getMembersByCourse(
+            @RequestParam Long courseId,
+            @RequestParam MemberType type) {
         return ResponseEntity.ok(memberService.findMembersByTypeAndCourseId(type, courseId));
     }
 
@@ -93,7 +95,9 @@ public class ReportController {
      * @return the group-course report
      */
     @GetMapping("/groups/courses")
-    public ResponseEntity<GroupCourseReportDto> getMembersByGroupAndCourse(@RequestParam String group, @RequestParam Long courseId) {
+    public ResponseEntity<GroupCourseReportDto> getMembersByGroupAndCourse(
+            @RequestParam String group,
+            @RequestParam Long courseId) {
         return ResponseEntity.ok(memberService.findMembersByGroupAndCourseId(group, courseId));
     }
 
@@ -106,7 +110,12 @@ public class ReportController {
      * @return list of matching members
      */
     @GetMapping("/members/filter")
-    public ResponseEntity<List<MemberDto>> filterMembersByCriterias(@RequestParam Integer minAge, @RequestParam Long courseId, @RequestParam MemberType type) {
-        return ResponseEntity.ok(memberService.findMembersByTypeAndAgeGreaterThanAndCourseId(type, minAge, courseId));
+    public ResponseEntity<List<MemberDto>> filterMembersByCriterias(
+            @RequestParam Integer minAge,
+            @RequestParam Long courseId,
+            @RequestParam MemberType type) {
+        return ResponseEntity.ok(
+                memberService.findMembersByTypeAndAgeGreaterThanAndCourseId(
+                        type, minAge, courseId));
     }
 }

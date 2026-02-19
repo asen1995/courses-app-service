@@ -178,7 +178,8 @@ class MemberServiceTest {
         var dto1 = MemberDto.builder().id(1L).name("John").type(MemberType.STUDENT).build();
         var dto2 = MemberDto.builder().id(2L).name("Jane").type(MemberType.STUDENT).build();
 
-        when(memberRepository.findByType(MemberType.STUDENT)).thenReturn(List.of(entity1, entity2));
+        when(memberRepository.findByType(MemberType.STUDENT))
+                .thenReturn(List.of(entity1, entity2));
         when(memberMapper.toMemberDto(entity1)).thenReturn(dto1);
         when(memberMapper.toMemberDto(entity2)).thenReturn(dto2);
 
@@ -247,7 +248,9 @@ class MemberServiceTest {
 
     @Test
     void shouldThrowWhenUpdatingNonExistentMember() {
-        var dto = MemberDto.builder().name("John").age(20).group("A1").type(MemberType.STUDENT).build();
+        var dto = MemberDto.builder()
+                .name("John").age(20).group("A1")
+                .type(MemberType.STUDENT).build();
 
         when(memberRepository.findById(999L)).thenReturn(Optional.empty());
 
@@ -289,10 +292,12 @@ class MemberServiceTest {
         var expectedDto = MemberDto.builder().id(1L).name("John").type(MemberType.STUDENT).build();
 
         when(courseRepository.existsById(1L)).thenReturn(true);
-        when(memberRepository.findByTypeAndCoursesId(MemberType.STUDENT, 1L)).thenReturn(List.of(entity));
+        when(memberRepository.findByTypeAndCoursesId(MemberType.STUDENT, 1L))
+                .thenReturn(List.of(entity));
         when(memberMapper.toMemberDto(entity)).thenReturn(expectedDto);
 
-        var result = memberService.findMembersByTypeAndCourseId(MemberType.STUDENT, 1L);
+        var result = memberService.findMembersByTypeAndCourseId(
+                MemberType.STUDENT, 1L);
 
         assertThat(result).containsExactly(expectedDto);
     }
@@ -301,7 +306,8 @@ class MemberServiceTest {
     void shouldThrowWhenFindingMembersByCourseAndCourseNotFound() {
         when(courseRepository.existsById(999L)).thenReturn(false);
 
-        assertThatThrownBy(() -> memberService.findMembersByTypeAndCourseId(MemberType.STUDENT, 999L))
+        assertThatThrownBy(() -> memberService
+                .findMembersByTypeAndCourseId(MemberType.STUDENT, 999L))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Course not found with id: 999");
     }
@@ -322,12 +328,17 @@ class MemberServiceTest {
     @Test
     void shouldFindMembersByTypeAndGroupAndCourseId() {
         var entity = new Member();
-        var expectedDto = MemberDto.builder().id(1L).name("John").type(MemberType.STUDENT).group("A1").build();
+        var expectedDto = MemberDto.builder()
+                .id(1L).name("John").type(MemberType.STUDENT)
+                .group("A1").build();
 
-        when(memberRepository.findByTypeAndGroupAndCoursesId(MemberType.STUDENT, "A1", 1L)).thenReturn(List.of(entity));
+        when(memberRepository.findByTypeAndGroupAndCoursesId(
+                MemberType.STUDENT, "A1", 1L))
+                .thenReturn(List.of(entity));
         when(memberMapper.toMemberDto(entity)).thenReturn(expectedDto);
 
-        var result = memberService.findMembersByTypeAndGroupAndCourseId(MemberType.STUDENT, "A1", 1L);
+        var result = memberService.findMembersByTypeAndGroupAndCourseId(
+                MemberType.STUDENT, "A1", 1L);
 
         assertThat(result).containsExactly(expectedDto);
     }
@@ -336,12 +347,20 @@ class MemberServiceTest {
     void shouldFindMembersByGroupAndCourseId() {
         var studentEntity = new Member();
         var teacherEntity = new Member();
-        var studentDto = MemberDto.builder().id(1L).name("John").type(MemberType.STUDENT).group("A1").build();
-        var teacherDto = MemberDto.builder().id(2L).name("Prof Smith").type(MemberType.TEACHER).group("A1").build();
+        var studentDto = MemberDto.builder()
+                .id(1L).name("John").type(MemberType.STUDENT)
+                .group("A1").build();
+        var teacherDto = MemberDto.builder()
+                .id(2L).name("Prof Smith").type(MemberType.TEACHER)
+                .group("A1").build();
 
         when(courseRepository.existsById(1L)).thenReturn(true);
-        when(memberRepository.findByTypeAndGroupAndCoursesId(MemberType.STUDENT, "A1", 1L)).thenReturn(List.of(studentEntity));
-        when(memberRepository.findByTypeAndGroupAndCoursesId(MemberType.TEACHER, "A1", 1L)).thenReturn(List.of(teacherEntity));
+        when(memberRepository.findByTypeAndGroupAndCoursesId(
+                MemberType.STUDENT, "A1", 1L))
+                .thenReturn(List.of(studentEntity));
+        when(memberRepository.findByTypeAndGroupAndCoursesId(
+                MemberType.TEACHER, "A1", 1L))
+                .thenReturn(List.of(teacherEntity));
         when(memberMapper.toMemberDto(studentEntity)).thenReturn(studentDto);
         when(memberMapper.toMemberDto(teacherEntity)).thenReturn(teacherDto);
 
@@ -364,13 +383,19 @@ class MemberServiceTest {
     @Test
     void shouldFindMembersByTypeAndAgeGreaterThanAndCourseId() {
         var entity = new Member();
-        var expectedDto = MemberDto.builder().id(1L).name("Jane").age(22).type(MemberType.STUDENT).build();
+        var expectedDto = MemberDto.builder()
+                .id(1L).name("Jane").age(22)
+                .type(MemberType.STUDENT).build();
 
         when(courseRepository.existsById(1L)).thenReturn(true);
-        when(memberRepository.findByTypeAndAgeGreaterThanAndCoursesId(MemberType.STUDENT, 20, 1L)).thenReturn(List.of(entity));
+        when(memberRepository.findByTypeAndAgeGreaterThanAndCoursesId(
+                MemberType.STUDENT, 20, 1L))
+                .thenReturn(List.of(entity));
         when(memberMapper.toMemberDto(entity)).thenReturn(expectedDto);
 
-        var result = memberService.findMembersByTypeAndAgeGreaterThanAndCourseId(MemberType.STUDENT, 20, 1L);
+        var result = memberService
+                .findMembersByTypeAndAgeGreaterThanAndCourseId(
+                        MemberType.STUDENT, 20, 1L);
 
         assertThat(result).containsExactly(expectedDto);
     }
@@ -379,7 +404,9 @@ class MemberServiceTest {
     void shouldThrowWhenFilteringMembersAndCourseNotFound() {
         when(courseRepository.existsById(999L)).thenReturn(false);
 
-        assertThatThrownBy(() -> memberService.findMembersByTypeAndAgeGreaterThanAndCourseId(MemberType.STUDENT, 20, 999L))
+        assertThatThrownBy(() -> memberService
+                .findMembersByTypeAndAgeGreaterThanAndCourseId(
+                        MemberType.STUDENT, 20, 999L))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Course not found with id: 999");
     }

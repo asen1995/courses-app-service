@@ -59,12 +59,15 @@ class ReportControllerTest {
         // Create students
         createMember("John", 20, GROUP_A1, MemberType.STUDENT, Set.of(math.getId(), art.getId()));
         createMember("Jane", 22, GROUP_A1, MemberType.STUDENT, Set.of(math.getId()));
-        createMember("Bob", 18, GROUP_B1, MemberType.STUDENT, Set.of(art.getId(), physics.getId()));
-        createMember("Alice", 25, GROUP_A1, MemberType.STUDENT, Set.of(math.getId(), physics.getId()));
+        createMember("Bob", 18, GROUP_B1, MemberType.STUDENT,
+                Set.of(art.getId(), physics.getId()));
+        createMember("Alice", 25, GROUP_A1, MemberType.STUDENT,
+                Set.of(math.getId(), physics.getId()));
 
         // Create teachers
         createMember("Prof Smith", 45, GROUP_A1, MemberType.TEACHER, Set.of(math.getId()));
-        createMember("Prof Jones", 50, GROUP_B1, MemberType.TEACHER, Set.of(art.getId(), physics.getId()));
+        createMember("Prof Jones", 50, GROUP_B1, MemberType.TEACHER,
+                Set.of(art.getId(), physics.getId()));
     }
 
     @Test
@@ -178,7 +181,9 @@ class ReportControllerTest {
         return objectMapper.readValue(result.getResponse().getContentAsString(), CourseDto.class);
     }
 
-    private MemberDto createMember(String memberName, int memberAge, String memberGroup, MemberType memberType, Set<Long> courseIds) throws Exception {
+    private MemberDto createMember(String memberName, int memberAge,
+            String memberGroup, MemberType memberType,
+            Set<Long> courseIds) throws Exception {
         var dto = memberDto(memberName, memberAge, memberGroup, memberType, courseIds);
         var result = mockMvc.perform(post(MEMBERS_PATH)
                         .contentType(MediaType.APPLICATION_JSON)

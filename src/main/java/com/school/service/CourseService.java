@@ -90,7 +90,8 @@ public class CourseService {
      */
     public void deleteCourse(Long id) {
         if (Boolean.FALSE.equals(courseRepository.existsById(id))) {
-            throw new ResourceNotFoundException("Course not found with id: " + id);
+            throw new ResourceNotFoundException(
+                    String.format("Course not found with id: %d", id));
         }
         courseRepository.deleteById(id);
     }
@@ -108,6 +109,7 @@ public class CourseService {
 
     private com.school.entity.Course findOrThrow(Long id) {
         return courseRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format("Course not found with id: %d", id)));
     }
 }

@@ -153,7 +153,9 @@ class MemberControllerTest {
         return objectMapper.readValue(result.getResponse().getContentAsString(), CourseDto.class);
     }
 
-    private MemberDto createMember(String memberName, int memberAge, String memberGroup, MemberType memberType, Set<Long> courseIds) throws Exception {
+    private MemberDto createMember(String memberName, int memberAge,
+            String memberGroup, MemberType memberType,
+            Set<Long> courseIds) throws Exception {
         var dto = memberDto(memberName, memberAge, memberGroup, memberType, courseIds);
         var result = mockMvc.perform(post(MEMBERS_PATH)
                         .contentType(MediaType.APPLICATION_JSON)

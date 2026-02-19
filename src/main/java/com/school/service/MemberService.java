@@ -40,7 +40,9 @@ public class MemberService {
      * @param courseRepository  the course repository (for course resolution and validation)
      * @param memberMapper     the member mapper
      */
-    public MemberService(MemberRepository memberRepository, CourseRepository courseRepository, MemberMapper memberMapper) {
+    public MemberService(MemberRepository memberRepository,
+                         CourseRepository courseRepository,
+                         MemberMapper memberMapper) {
         this.memberRepository = memberRepository;
         this.courseRepository = courseRepository;
         this.memberMapper = memberMapper;
@@ -105,7 +107,8 @@ public class MemberService {
      */
     public void deleteMember(Long id) {
         if (Boolean.FALSE.equals(memberRepository.existsById(id))) {
-            throw new ResourceNotFoundException("Member not found with id: " + id);
+            throw new ResourceNotFoundException(
+                    String.format("Member not found with id: %d", id));
         }
         memberRepository.deleteById(id);
     }
@@ -132,7 +135,8 @@ public class MemberService {
     @Transactional(readOnly = true)
     public List<MemberDto> findMembersByTypeAndCourseId(MemberType type, Long courseId) {
         validateCourseExists(courseId);
-        return memberRepository.findByTypeAndCoursesId(type, courseId).stream().map(memberMapper::toMemberDto).toList();
+        return memberRepository.findByTypeAndCoursesId(type, courseId)
+                .stream().map(memberMapper::toMemberDto).toList();
     }
 
     /**
@@ -143,7 +147,8 @@ public class MemberService {
      */
     @Transactional(readOnly = true)
     public List<MemberDto> findMembersByGroup(String group) {
-        return memberRepository.findByGroup(group).stream().map(memberMapper::toMemberDto).toList();
+        return memberRepository.findByGroup(group)
+                .stream().map(memberMapper::toMemberDto).toList();
     }
 
     /**
@@ -155,8 +160,10 @@ public class MemberService {
      * @return list of matching members
      */
     @Transactional(readOnly = true)
-    public List<MemberDto> findMembersByTypeAndGroupAndCourseId(MemberType type, String group, Long courseId) {
-        return memberRepository.findByTypeAndGroupAndCoursesId(type, group, courseId).stream().map(memberMapper::toMemberDto).toList();
+    public List<MemberDto> findMembersByTypeAndGroupAndCourseId(
+            MemberType type, String group, Long courseId) {
+        return memberRepository.findByTypeAndGroupAndCoursesId(type, group, courseId)
+                .stream().map(memberMapper::toMemberDto).toList();
     }
 
     /**
@@ -171,12 +178,15 @@ public class MemberService {
     @Transactional(readOnly = true)
     public GroupCourseReportDto findMembersByGroupAndCourseId(String group, Long courseId) {
         validateCourseExists(courseId);
-        List<MemberDto> students = findMembersByTypeAndGroupAndCourseId(MemberType.STUDENT, group, courseId);
-        List<MemberDto> teachers = findMembersByTypeAndGroupAndCourseId(MemberType.TEACHER, group, courseId);
+        List<MemberDto> students = findMembersByTypeAndGroupAndCourseId(
+                MemberType.STUDENT, group, courseId);
+        List<MemberDto> teachers = findMembersByTypeAndGroupAndCourseId(
+                MemberType.TEACHER, group, courseId);
         List<MemberDto> allMembers = new ArrayList<>(students);
         allMembers.addAll(teachers);
         if (allMembers.isEmpty()) {
-            throw new ResourceNotFoundException("No members found for group: " + group + " and course id: " + courseId);
+            throw new ResourceNotFoundException(
+                    String.format("No members found for group: %s and course id: %d", group, courseId));
         }
         return GroupCourseReportDto.builder()
                 .group(group)
@@ -195,19 +205,23 @@ public class MemberService {
      * @throws ResourceNotFoundException if the course is not found
      */
     @Transactional(readOnly = true)
-    public List<MemberDto> findMembersByTypeAndAgeGreaterThanAndCourseId(MemberType type, int age, Long courseId) {
+    public List<MemberDto> findMembersByTypeAndAgeGreaterThanAndCourseId(
+            MemberType type, Integer age, Long courseId) {
         validateCourseExists(courseId);
-        return memberRepository.findByTypeAndAgeGreaterThanAndCoursesId(type, age, courseId).stream().map(memberMapper::toMemberDto).toList();
+        return memberRepository.findByTypeAndAgeGreaterThanAndCoursesId(type, age, courseId)
+                .stream().map(memberMapper::toMemberDto).toList();
     }
 
     private Member findOrThrow(Long id) {
         return memberRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Member not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format("Member not found with id: %d", id)));
     }
 
     private void validateCourseExists(Long courseId) {
         if (Boolean.FALSE.equals(courseRepository.existsById(courseId))) {
-            throw new ResourceNotFoundException("Course not found with id: " + courseId);
+            throw new ResourceNotFoundException(
+                    String.format("Course not found with id: %d", courseId));
         }
     }
 
@@ -218,8 +232,11 @@ public class MemberService {
         var courses = new HashSet<>(courseRepository.findAllById(courseIds));
         if (courses.size() != courseIds.size()) {
             var foundIds = courses.stream().map(Course::getId).collect(Collectors.toSet());
-            var missingIds = courseIds.stream().filter(id -> Boolean.FALSE.equals(foundIds.contains(id))).toList();
-            throw new ResourceNotFoundException("Courses not found with ids: " + missingIds);
+            var missingIds = courseIds.stream()
+                    .filter(id -> Boolean.FALSE.equals(foundIds.contains(id)))
+                    .toList();
+            throw new ResourceNotFoundException(
+                    String.format("Courses not found with ids: %s", missingIds));
         }
         return courses;
     }
