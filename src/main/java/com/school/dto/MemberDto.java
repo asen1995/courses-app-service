@@ -39,4 +39,16 @@ public class MemberDto {
     private MemberType type;
 
     private Set<Long> courseIds;
+
+    public boolean isAssignedToCourses() {
+        return courseIds != null && !courseIds.isEmpty();
+    }
+
+    public boolean isTeacher() {
+        return type == MemberType.TEACHER;
+    }
+
+    public boolean isStudent() {
+        return type == MemberType.STUDENT;
+    }
 }

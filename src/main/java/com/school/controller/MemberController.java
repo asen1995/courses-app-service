@@ -41,12 +41,12 @@ public class MemberController {
     /**
      * Creates a new member.
      *
-     * @param dto the member data
+     * @param memberDto the member data
      * @return the created member with HTTP 201
      */
     @PostMapping
-    public ResponseEntity<MemberDto> createMember(@Valid @RequestBody MemberDto dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(memberService.createMember(dto));
+    public ResponseEntity<MemberDto> createMember(@Valid @RequestBody MemberDto memberDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(memberService.createMember(memberDto));
     }
 
     /**
@@ -75,14 +75,14 @@ public class MemberController {
      * Updates an existing member.
      *
      * @param id  the member ID
-     * @param dto the updated member data
+     * @param memberDto the updated member data
      * @return the updated member
      */
     @PutMapping("/{id}")
     public ResponseEntity<MemberDto> updateMember(
             @PathVariable Long id,
-            @Valid @RequestBody MemberDto dto) {
-        return ResponseEntity.ok(memberService.updateMember(id, dto));
+            @Valid @RequestBody MemberDto memberDto) {
+        return ResponseEntity.ok(memberService.updateMember(id, memberDto));
     }
 
     /**

@@ -39,12 +39,12 @@ public class CourseController {
     /**
      * Creates a new course.
      *
-     * @param dto the course data
+     * @param courseDto the course data
      * @return the created course with HTTP 201
      */
     @PostMapping
-    public ResponseEntity<CourseDto> createCourse(@Valid @RequestBody CourseDto dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(courseService.createCourse(dto));
+    public ResponseEntity<CourseDto> createCourse(@Valid @RequestBody CourseDto courseDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(courseService.createCourse(courseDto));
     }
 
     /**
@@ -72,14 +72,14 @@ public class CourseController {
      * Updates an existing course.
      *
      * @param id  the course ID
-     * @param dto the updated course data
+     * @param courseDto the updated course data
      * @return the updated course
      */
     @PutMapping("/{id}")
     public ResponseEntity<CourseDto> updateCourse(
             @PathVariable Long id,
-            @Valid @RequestBody CourseDto dto) {
-        return ResponseEntity.ok(courseService.updateCourse(id, dto));
+            @Valid @RequestBody CourseDto courseDto) {
+        return ResponseEntity.ok(courseService.updateCourse(id, courseDto));
     }
 
     /**

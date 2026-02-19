@@ -361,12 +361,9 @@ class MemberServiceTest {
                 .group("A1").build();
 
         when(courseRepository.existsById(1L)).thenReturn(true);
-        when(memberRepository.findByTypeAndGroupAndCoursesId(
-                MemberType.STUDENT, "A1", 1L))
-                .thenReturn(List.of(studentEntity));
-        when(memberRepository.findByTypeAndGroupAndCoursesId(
-                MemberType.TEACHER, "A1", 1L))
-                .thenReturn(List.of(teacherEntity));
+        when(memberRepository.findByTypesAndGroupAndCoursesId(
+                List.of(MemberType.STUDENT, MemberType.TEACHER), "A1", 1L))
+                .thenReturn(List.of(studentEntity, teacherEntity));
         when(memberMapper.toMemberDto(studentEntity)).thenReturn(studentDto);
         when(memberMapper.toMemberDto(teacherEntity)).thenReturn(teacherDto);
 

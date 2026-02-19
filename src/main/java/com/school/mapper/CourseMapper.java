@@ -23,19 +23,19 @@ public interface CourseMapper {
     /**
      * Converts a course DTO to an entity. Member associations are ignored.
      *
-     * @param dto the course DTO
+     * @param courseDto the course DTO
      * @return the course entity
      */
     @Mapping(target = "members", ignore = true)
-    Course toCourseEntity(CourseDto dto);
+    Course toCourseEntity(CourseDto courseDto);
 
     /**
      * Updates an existing course entity from a DTO. ID and member associations are ignored.
      *
-     * @param dto    the source DTO
+     * @param courseDto    the source DTO
      * @param course the target entity to update
      */
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "members", ignore = true)
-    void updateCourseEntity(CourseDto dto, @MappingTarget Course course);
+    void updateCourseEntity(CourseDto courseDto, @MappingTarget Course course);
 }
