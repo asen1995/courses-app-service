@@ -62,6 +62,23 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
             Long courseId);
 
     /**
+     * Checks if a teacher other than the excluded one is assigned to a specific course.
+     *
+     * @param courseId        the course ID
+     * @param currentMemberId the member ID to exclude from the check, or null when creating
+     * @return true if another teacher is assigned
+     */
+    @Query("""
+            SELECT COUNT(m) > 0
+            FROM Member m
+            JOIN m.courses c
+            WHERE m.type = 'TEACHER'
+              AND c.id = :courseId
+              AND (:currentMemberId IS NULL OR m.id <> :currentMemberId)
+            """)
+    boolean courseHasAnotherTeacher(Long courseId, Long currentMemberId);
+
+    /**
      * Finds all members belonging to a specific group.
      *
      * @param group the group name

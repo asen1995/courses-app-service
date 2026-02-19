@@ -3,7 +3,10 @@ package com.school.service;
 import com.school.dto.MemberDto;
 import com.school.entity.Course;
 import com.school.entity.Member;
+import com.school.fixture.CourseFixture;
+import com.school.fixture.MemberFixture;
 import com.school.enums.MemberType;
+import com.school.exception.DuplicateTeacherException;
 import com.school.exception.ResourceNotFoundException;
 import com.school.mapper.MemberMapper;
 import com.school.repository.CourseRepository;
@@ -22,6 +25,7 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -411,5 +415,77 @@ class MemberServiceTest {
                         MemberType.STUDENT, 20, 999L))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Course not found with id: 999");
+    }
+
+    @Test
+    void shouldThrowWhenCreatingTeacherForCourseAlreadyHavingTeacher() {
+        var dto = MemberFixture.memberDto("Prof B", 40, "A1",
+                MemberType.TEACHER, Set.of(1L));
+
+        when(memberRepository.courseHasAnotherTeacher(1L, null))
+                .thenReturn(true);
+
+        assertThatThrownBy(() -> memberService.createMember(dto))
+                .isInstanceOf(DuplicateTeacherException.class)
+                .hasMessageContaining("A teacher is already assigned to course with id: 1");
+
+        verify(memberRepository, never()).save(any());
+    }
+
+    @Test
+    void shouldCreateStudentForCourseAlreadyHavingTeacher() {
+        var course = CourseFixture.courseEntity(1L);
+        var dto = MemberFixture.memberDto("Student A", 20, "A1",
+                MemberType.STUDENT, Set.of(1L));
+        var entity = new Member();
+        var savedEntity = new Member();
+        var expectedDto = MemberFixture.memberDto(1L, "Student A",
+                MemberType.STUDENT, Set.of(1L));
+
+        when(memberMapper.toMemberEntity(dto)).thenReturn(entity);
+        when(courseRepository.findAllById(Set.of(1L))).thenReturn(List.of(course));
+        when(memberRepository.save(entity)).thenReturn(savedEntity);
+        when(memberMapper.toMemberDto(savedEntity)).thenReturn(expectedDto);
+
+        var result = memberService.createMember(dto);
+
+        assertThat(result).isEqualTo(expectedDto);
+    }
+
+    @Test
+    void shouldUpdateTeacherNameWithSameCoursesWithoutBlocking() {
+        var course = CourseFixture.courseEntity(1L);
+        var entity = MemberFixture.memberEntity(1L);
+        var dto = MemberFixture.memberDto("Prof A Updated", 45, "A1",
+                MemberType.TEACHER, Set.of(1L));
+        var savedEntity = new Member();
+        var expectedDto = MemberFixture.memberDto(1L, "Prof A Updated",
+                MemberType.TEACHER, Set.of(1L));
+
+        when(memberRepository.findById(1L)).thenReturn(Optional.of(entity));
+        when(memberRepository.courseHasAnotherTeacher(1L, 1L)).thenReturn(false);
+        when(courseRepository.findAllById(Set.of(1L))).thenReturn(List.of(course));
+        when(memberRepository.save(entity)).thenReturn(savedEntity);
+        when(memberMapper.toMemberDto(savedEntity)).thenReturn(expectedDto);
+
+        var result = memberService.updateMember(1L, dto);
+
+        assertThat(result).isEqualTo(expectedDto);
+    }
+
+    @Test
+    void shouldThrowWhenUpdatingTeacherToCourseAlreadyHavingAnotherTeacher() {
+        var entity = MemberFixture.memberEntity(1L);
+        var dto = MemberFixture.memberDto("Prof A", 45, "A1",
+                MemberType.TEACHER, Set.of(2L));
+
+        when(memberRepository.findById(1L)).thenReturn(Optional.of(entity));
+        when(memberRepository.courseHasAnotherTeacher(2L, 1L)).thenReturn(true);
+
+        assertThatThrownBy(() -> memberService.updateMember(1L, dto))
+                .isInstanceOf(DuplicateTeacherException.class)
+                .hasMessageContaining("A teacher is already assigned to course with id: 2");
+
+        verify(memberRepository, never()).save(any());
     }
 }
