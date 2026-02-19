@@ -70,7 +70,7 @@ public class MemberService {
      */
     @Transactional(readOnly = true)
     public MemberDto getMemberById(Long id) {
-        return memberMapper.toMemberDto(findOrThrow(id));
+        return memberMapper.toMemberDto(findWithCoursesOrThrow(id));
     }
 
     /**
@@ -214,6 +214,12 @@ public class MemberService {
 
     private Member findOrThrow(Long id) {
         return memberRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format("Member not found with id: %d", id)));
+    }
+
+    private Member findWithCoursesOrThrow(Long id) {
+        return memberRepository.findWithCoursesById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         String.format("Member not found with id: %d", id)));
     }

@@ -154,7 +154,8 @@ class MemberServiceTest {
                 .type(MemberType.STUDENT)
                 .build();
 
-        when(memberRepository.findById(1L)).thenReturn(Optional.of(entity));
+        when(memberRepository.findWithCoursesById(1L))
+                .thenReturn(Optional.of(entity));
         when(memberMapper.toMemberDto(entity)).thenReturn(expectedDto);
 
         var result = memberService.getMemberById(1L);
@@ -164,7 +165,8 @@ class MemberServiceTest {
 
     @Test
     void shouldThrowWhenMemberNotFoundById() {
-        when(memberRepository.findById(999L)).thenReturn(Optional.empty());
+        when(memberRepository.findWithCoursesById(999L))
+                .thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> memberService.getMemberById(999L))
                 .isInstanceOf(ResourceNotFoundException.class)
