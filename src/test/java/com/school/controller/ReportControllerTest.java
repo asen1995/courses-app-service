@@ -134,6 +134,31 @@ class ReportControllerTest {
     }
 
     @Test
+    void shouldReturnNotFoundWhenCourseDoesNotExistForCourseMembers() throws Exception {
+        mockMvc.perform(get(COURSE_MEMBERS_PATH)
+                        .param("courseId", "999")
+                        .param("type", "STUDENT"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenCourseDoesNotExistForGroupCourse() throws Exception {
+        mockMvc.perform(get(GROUP_COURSE_PATH)
+                        .param("group", GROUP_A1)
+                        .param("courseId", "999"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenCourseDoesNotExistForFilter() throws Exception {
+        mockMvc.perform(get(MEMBERS_FILTER_PATH)
+                        .param("minAge", "20")
+                        .param("courseId", "999")
+                        .param("type", "STUDENT"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     void shouldReturnEmptyWhenNoMembersMatchFilter() throws Exception {
         // Students older than 30 in Math: none
         mockMvc.perform(get(MEMBERS_FILTER_PATH)

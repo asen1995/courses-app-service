@@ -45,7 +45,7 @@ public class CourseService {
     }
 
     public void deleteCourse(Long id) {
-        if (!courseRepository.existsById(id)) {
+        if (Boolean.FALSE.equals(courseRepository.existsById(id))) {
             throw new ResourceNotFoundException("Course not found with id: " + id);
         }
         courseRepository.deleteById(id);

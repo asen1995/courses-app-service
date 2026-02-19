@@ -78,6 +78,16 @@ class MemberControllerTest {
     }
 
     @Test
+    void shouldReturnNotFoundWhenCreatingMemberWithNonExistentCourse() throws Exception {
+        var dto = memberDto("John", 20, "A1", MemberType.STUDENT, Set.of(999L));
+
+        mockMvc.perform(post(MEMBERS_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     void shouldReturnNotFoundForMissingMember() throws Exception {
         mockMvc.perform(get(MEMBER_BY_ID_PATH, 999))
                 .andExpect(status().isNotFound());
@@ -110,6 +120,17 @@ class MemberControllerTest {
                 .andExpect(jsonPath("$.name").value(updated.getName()))
                 .andExpect(jsonPath("$.age").value(updated.getAge()))
                 .andExpect(jsonPath("$.group").value(updated.getGroup()));
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenUpdatingMemberWithNonExistentCourse() throws Exception {
+        var member = createMember("John", 20, "A1", MemberType.STUDENT, Set.of());
+        var updated = memberDto("John Updated", 21, "B1", MemberType.STUDENT, Set.of(999L));
+
+        mockMvc.perform(put(MEMBER_BY_ID_PATH, member.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updated)))
+                .andExpect(status().isNotFound());
     }
 
     @Test

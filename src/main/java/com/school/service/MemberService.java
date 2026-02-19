@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -56,7 +57,7 @@ public class MemberService {
     }
 
     public void deleteMember(Long id) {
-        if (!memberRepository.existsById(id)) {
+        if (Boolean.FALSE.equals(memberRepository.existsById(id))) {
             throw new ResourceNotFoundException("Member not found with id: " + id);
         }
         memberRepository.deleteById(id);
@@ -69,6 +70,7 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public List<MemberDto> findMembersByTypeAndCourseId(MemberType type, Long courseId) {
+        validateCourseExists(courseId);
         return memberRepository.findByTypeAndCoursesId(type, courseId).stream().map(memberMapper::toDto).toList();
     }
 
@@ -84,6 +86,7 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public GroupCourseReportDto findMembersByGroupAndCourseId(String group, Long courseId) {
+        validateCourseExists(courseId);
         List<MemberDto> students = findMembersByTypeAndGroupAndCourseId(MemberType.STUDENT, group, courseId);
         List<MemberDto> teachers = findMembersByTypeAndGroupAndCourseId(MemberType.TEACHER, group, courseId);
         List<MemberDto> allMembers = new ArrayList<>(students);
@@ -97,6 +100,7 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public List<MemberDto> findMembersByTypeAndAgeGreaterThanAndCourseId(MemberType type, int age, Long courseId) {
+        validateCourseExists(courseId);
         return memberRepository.findByTypeAndAgeGreaterThanAndCoursesId(type, age, courseId).stream().map(memberMapper::toDto).toList();
     }
 
@@ -105,10 +109,22 @@ public class MemberService {
                 .orElseThrow(() -> new ResourceNotFoundException("Member not found with id: " + id));
     }
 
+    private void validateCourseExists(Long courseId) {
+        if (Boolean.FALSE.equals(courseRepository.existsById(courseId))) {
+            throw new ResourceNotFoundException("Course not found with id: " + courseId);
+        }
+    }
+
     private Set<Course> resolveCourses(Set<Long> courseIds) {
         if (courseIds == null || courseIds.isEmpty()) {
             return new HashSet<>();
         }
-        return new HashSet<>(courseRepository.findAllById(courseIds));
+        var courses = new HashSet<>(courseRepository.findAllById(courseIds));
+        if (courses.size() != courseIds.size()) {
+            var foundIds = courses.stream().map(Course::getId).collect(Collectors.toSet());
+            var missingIds = courseIds.stream().filter(id -> Boolean.FALSE.equals(foundIds.contains(id))).toList();
+            throw new ResourceNotFoundException("Courses not found with ids: " + missingIds);
+        }
+        return courses;
     }
 }
