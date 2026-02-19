@@ -100,7 +100,7 @@ public class ReportController {
     /**
      * Filters members by type, minimum age, and course enrollment.
      *
-     * @param minAge   the minimum age (exclusive)
+     * @param minAge   the minimum age (inclusive)
      * @param courseId the course ID
      * @param type     the member type
      * @return list of matching members

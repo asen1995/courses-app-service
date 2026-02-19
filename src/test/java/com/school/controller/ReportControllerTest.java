@@ -124,13 +124,13 @@ class ReportControllerTest {
 
     @Test
     void shouldReturnStudentsOlderThanAgeInCourse() throws Exception {
-        // Students older than 20 in Math: Jane (22), Alice (25)
+        // Students with age >= 20 in Math: John (20), Jane (22), Alice (25)
         mockMvc.perform(get(MEMBERS_FILTER_PATH)
                         .param("minAge", "20")
                         .param("courseId", math.getId().toString())
                         .param("type", "STUDENT"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2));
+                .andExpect(jsonPath("$.length()").value(3));
     }
 
     @Test

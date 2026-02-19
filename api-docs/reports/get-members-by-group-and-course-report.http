@@ -1,0 +1,2 @@
+### Get Members by Group and Course
+GET {{host}}/reports/groups/courses?group=A1&courseId=1

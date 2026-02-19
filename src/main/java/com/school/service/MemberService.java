@@ -175,6 +175,9 @@ public class MemberService {
         List<MemberDto> teachers = findMembersByTypeAndGroupAndCourseId(MemberType.TEACHER, group, courseId);
         List<MemberDto> allMembers = new ArrayList<>(students);
         allMembers.addAll(teachers);
+        if (allMembers.isEmpty()) {
+            throw new ResourceNotFoundException("No members found for group: " + group + " and course id: " + courseId);
+        }
         return GroupCourseReportDto.builder()
                 .group(group)
                 .courseId(courseId)
@@ -186,7 +189,7 @@ public class MemberService {
      * Finds members by type with age greater than the specified value, enrolled in a course.
      *
      * @param type     the member type
-     * @param age      the minimum age (exclusive)
+     * @param age      the minimum age (inclusive)
      * @param courseId the course ID
      * @return list of matching members
      * @throws ResourceNotFoundException if the course is not found

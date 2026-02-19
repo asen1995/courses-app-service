@@ -1,0 +1,2 @@
+### Get Students in Course
+GET {{host}}/reports/courses/members?courseId=1&type=STUDENT

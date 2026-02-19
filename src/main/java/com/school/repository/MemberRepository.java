@@ -61,13 +61,13 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     List<Member> findByTypeAndGroupAndCoursesId(@Param("type") MemberType type, @Param("group") String group, @Param("courseId") Long courseId);
 
     /**
-     * Finds members by type with age greater than the specified value, enrolled in a course.
+     * Finds members by type with age greater than or equal to the specified value, enrolled in a course.
      *
      * @param type     the member type
-     * @param age      the minimum age (exclusive)
+     * @param age      the minimum age (inclusive)
      * @param courseId the course ID
      * @return list of matching members
      */
-    @Query("SELECT m FROM Member m JOIN m.courses c WHERE m.type = :type AND m.age > :age AND c.id = :courseId")
+    @Query("SELECT m FROM Member m JOIN m.courses c WHERE m.type = :type AND m.age >= :age AND c.id = :courseId")
     List<Member> findByTypeAndAgeGreaterThanAndCoursesId(@Param("type") MemberType type, @Param("age") int age, @Param("courseId") Long courseId);
 }
